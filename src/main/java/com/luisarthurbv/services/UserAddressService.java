@@ -1,6 +1,5 @@
 package com.luisarthurbv.services;
 
-import com.luisarthurbv.cases.address.CreateAddress;
 import com.luisarthurbv.entity.UserAddressEntity;
 import com.luisarthurbv.models.Address;
 import com.luisarthurbv.models.User;

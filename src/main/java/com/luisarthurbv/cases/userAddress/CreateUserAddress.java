@@ -1,4 +1,4 @@
-package com.luisarthurbv.cases.address;
+package com.luisarthurbv.cases.userAddress;
 
 import com.luisarthurbv.models.Address;
 import com.luisarthurbv.models.UserAddress;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class CreateAddress {
+public class CreateUserAddress {
 
     private UserAddressService userAddressService;
 
     @Autowired
-    public CreateAddress(UserAddressService userAddressService) {
+    public CreateUserAddress(UserAddressService userAddressService) {
         this.userAddressService = userAddressService;
     }
 
