@@ -66,11 +66,4 @@ public class Address {
         this.state = state;
     }
 
-    public boolean isValid() {
-        return cep != null &&
-                street != null &&
-                number != null &&
-                city != null &&
-                state != null;
-    }
 }

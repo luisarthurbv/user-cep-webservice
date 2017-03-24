@@ -5,6 +5,7 @@ import com.luisarthurbv.models.Address;
 import com.luisarthurbv.models.User;
 import com.luisarthurbv.models.UserAddress;
 import com.luisarthurbv.repositories.UserAddressRepository;
+import com.luisarthurbv.utils.AddressUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class UserAddressService {
         if(!isValidUser(userId)) {
             throw new InvalidUserException(userId);
         }
-        if(!address.isValid()) {
+        if(!AddressUtils.isValid(address)) {
             throw new InvalidAddressException();
         }
         try {
