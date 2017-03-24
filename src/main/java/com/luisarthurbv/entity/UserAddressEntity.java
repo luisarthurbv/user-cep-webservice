@@ -90,4 +90,28 @@ public class UserAddressEntity {
     public void setState(String state) {
         this.state = state;
     }
+
+    public void mergeAddress(UserAddressEntity entity) {
+        if(entity.cep != null) {
+            this.cep = entity.cep;
+        }
+        if(entity.street != null) {
+            this.street = entity.street;
+        }
+        if(entity.number != null) {
+            this.number = entity.number;
+        }
+        if(entity.complements != null) {
+            this.complements = entity.complements;
+        }
+        if(entity.neighborhood != null) {
+            this.neighborhood = entity.neighborhood;
+        }
+        if(entity.city != null) {
+            this.city = entity.city;
+        }
+        if(entity.state != null) {
+            this.state = entity.state;
+        }
+    }
 }

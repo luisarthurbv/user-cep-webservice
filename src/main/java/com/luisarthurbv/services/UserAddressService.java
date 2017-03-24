@@ -68,7 +68,16 @@ public class UserAddressService {
         if(!isValidUser(userId)) {
             throw new InvalidUserException(userId);
         }
-        UserAddressEntity entity = userAddressRepository.save(createUserAddressEntityObject(userId, address));
+        UserAddressEntity entity = userAddressRepository.findByUserId(userId);
+        if (entity == null) {
+            throw new UserAddressOperationException(userId, "update");
+        }
+        UserAddressEntity givenEntity = createUserAddressEntityObject(userId, address);
+        entity.mergeAddress(givenEntity);
+        entity = userAddressRepository.save(entity);
+        if (entity == null) {
+            throw new UserAddressOperationException(userId, "update");
+        }
         return createUserAddressObject(entity);
     }
 

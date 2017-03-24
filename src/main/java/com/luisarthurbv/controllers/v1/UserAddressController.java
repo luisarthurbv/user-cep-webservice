@@ -2,6 +2,7 @@ package com.luisarthurbv.controllers.v1;
 
 import com.luisarthurbv.cases.userAddress.CreateUserAddress;
 import com.luisarthurbv.cases.userAddress.RetrieveUserAddress;
+import com.luisarthurbv.cases.userAddress.UpdateUserAddress;
 import com.luisarthurbv.models.Address;
 import com.luisarthurbv.models.UserAddress;
 import com.luisarthurbv.services.UserAddressService;
@@ -26,15 +27,18 @@ public class UserAddressController {
 
     private UserAddressService userAddressService;
     private RetrieveUserAddress retrieveUserAddress;
-    private CreateUserAddress createAddress;
+    private CreateUserAddress createUserAddress;
+    private UpdateUserAddress updateUserAddress;
 
     @Autowired
     public UserAddressController(UserAddressService userAddressService,
                                  RetrieveUserAddress retrieveUserAddress,
-                                 CreateUserAddress createAddress) {
+                                 CreateUserAddress createAddress,
+                                 UpdateUserAddress updateUserAddress) {
         this.userAddressService = userAddressService;
         this.retrieveUserAddress = retrieveUserAddress;
-        this.createAddress = createAddress;
+        this.createUserAddress = createAddress;
+        this.updateUserAddress = updateUserAddress;
     }
 
     @RequestMapping(value = "/get", method = RequestMethod.POST)
@@ -57,7 +61,7 @@ public class UserAddressController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<Map> createUserAddress(@RequestBody CreateUserAddressRequest request) {
         try {
-            UserAddress userAddress = createAddress.createAddress(
+            UserAddress userAddress = createUserAddress.createAddress(
                     request.userId, request.address
             );
             Map<String, Object> response = new HashMap<String, Object>();
@@ -68,9 +72,7 @@ public class UserAddressController {
         } catch (CreateUserAddress.InvalidAddressException e) {
             return ResponseUtils.invalidArgumentsResponse("Invalid address parameters");
         } catch (CreateUserAddress.CreateAddressException e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("error", String.format("Couldn't create address for userId=%d", request.userId));
-            return new ResponseEntity<Map>(response, HttpStatus.METHOD_FAILURE);
+            return operationFailedResponse(String.format("Couldn't create address for userId=%d", request.userId));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return unknownErrorResponse();
@@ -79,7 +81,25 @@ public class UserAddressController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ResponseEntity<Map> updateUserAddress(@RequestBody UpdateUserAddressRequest request) {
-        return null;
+        try {
+            UserAddress userAddress = updateUserAddress.updateUserAddress(request.userId, request.address);
+            Map<String, Object> response = new HashMap<>();
+            response.put("address", userAddress);
+            return new ResponseEntity<Map>(response, HttpStatus.OK);
+        } catch (UpdateUserAddress.UserNotFoundException e) {
+            return userNotFoundResponse(request.userId);
+        } catch (UpdateUserAddress.UpdateUserAddressException e) {
+            return operationFailedResponse(String.format("Couldn't update address for userId=%d", request.userId));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return unknownErrorResponse();
+        }
+    }
+
+    private ResponseEntity<Map> operationFailedResponse(String error) {
+        Map response = new HashMap();
+        response.put("error", error);
+        return new ResponseEntity<Map>(response, HttpStatus.METHOD_FAILURE);
     }
 
     private ResponseEntity<Map> userNotFoundResponse(long userId) {
