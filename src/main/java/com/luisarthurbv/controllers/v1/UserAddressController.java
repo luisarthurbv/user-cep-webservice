@@ -1,6 +1,7 @@
 package com.luisarthurbv.controllers.v1;
 
 import com.luisarthurbv.cases.userAddress.CreateUserAddress;
+import com.luisarthurbv.cases.userAddress.DeleteUserAddress;
 import com.luisarthurbv.cases.userAddress.RetrieveUserAddress;
 import com.luisarthurbv.cases.userAddress.UpdateUserAddress;
 import com.luisarthurbv.models.Address;
@@ -25,20 +26,20 @@ import java.util.Map;
 @RequestMapping("/user/address/v1")
 public class UserAddressController {
 
-    private UserAddressService userAddressService;
     private RetrieveUserAddress retrieveUserAddress;
     private CreateUserAddress createUserAddress;
     private UpdateUserAddress updateUserAddress;
+    private DeleteUserAddress deleteUserAddress;
 
     @Autowired
-    public UserAddressController(UserAddressService userAddressService,
-                                 RetrieveUserAddress retrieveUserAddress,
+    public UserAddressController(RetrieveUserAddress retrieveUserAddress,
                                  CreateUserAddress createAddress,
-                                 UpdateUserAddress updateUserAddress) {
-        this.userAddressService = userAddressService;
+                                 UpdateUserAddress updateUserAddress,
+                                 DeleteUserAddress deleteUserAddress) {
         this.retrieveUserAddress = retrieveUserAddress;
         this.createUserAddress = createAddress;
         this.updateUserAddress = updateUserAddress;
+        this.deleteUserAddress = deleteUserAddress;
     }
 
     @RequestMapping(value = "/get", method = RequestMethod.POST)
@@ -96,7 +97,21 @@ public class UserAddressController {
         }
     }
 
-    private ResponseEntity<Map> operationFailedResponse(String error) {
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public ResponseEntity<Map> deleteUserAddress(@RequestBody DeleteUserAddressRequest request) {
+        boolean succeed = false;
+        try {
+            succeed = deleteUserAddress.deleteUserAddress(request.userId);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        Map<String, Object> response = new HashMap<String, Object>();
+        response.put("succeed", succeed);
+        return new ResponseEntity<Map>(response, HttpStatus.OK);
+    }
+
+
+        private ResponseEntity<Map> operationFailedResponse(String error) {
         Map response = new HashMap();
         response.put("error", error);
         return new ResponseEntity<Map>(response, HttpStatus.METHOD_FAILURE);
@@ -134,6 +149,18 @@ public class UserAddressController {
     }
 
     public static class GetUserAddressRequest {
+        private long userId;
+
+        public long getUserId() {
+            return userId;
+        }
+
+        public void setUserId(long userId) {
+            this.userId = userId;
+        }
+    }
+
+    public static class DeleteUserAddressRequest {
         private long userId;
 
         public long getUserId() {

@@ -84,7 +84,7 @@ public class UserAddressService {
 
     public boolean deleteUserAddress(long userId) throws InvalidUserException, UserAddressOperationException {
         if(!isValidUser(userId)) {
-            throw new InvalidUserException(userId);
+            return false;
         }
         try {
             userAddressRepository.deleteByUserId(userId);
